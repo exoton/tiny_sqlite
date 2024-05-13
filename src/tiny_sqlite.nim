@@ -680,3 +680,9 @@ iterator rows*(db: DbConn, sql: string, params: varargs[DbValue, toDbValue]): se
 
 proc unpack*[T: tuple](row: seq[DbValue], _: typedesc[T]): T {.deprecated.} =
     ResultRow(values: row).unpack(T)
+
+when defined(sqlite_has_codec):
+    proc openEncryptedDatabase*(path, password: string; mode = dbReadWrite; cacheSize: Natural = 100): DbConn =
+        sqlite.sqlite3CreateEncKey(cstring(password));
+        result = openDatabase(path, mode, cacheSize)
+        sqlite.sqlite3InitCodec(result.unsafeHandle())

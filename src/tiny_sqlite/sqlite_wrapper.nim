@@ -183,7 +183,7 @@ proc errmsg*(db: Sqlite3): cstring
 
 proc prepare_v2*(db: Sqlite3, zSql: cstring, nByte: cint, stmt: var Stmt,
                 pzTail: var cstring): cint
-    {.importc: "sqlite3_prepare_v2", cdecl, dynlib: Lib.}
+    {.cdecl, dynlib: Lib, importc: "sqlite3_prepare_v2"}
 
 proc bind_blob*(stmt: Stmt, col: cint, value: pointer, len: cint,
                 para5: SqliteDestructor): cint
@@ -292,3 +292,10 @@ proc free*(z: cstring)
 when not defined(macosx):
     proc load_extension*(db: Sqlite3, filename: cstring, entry: cstring, error: var cstring): cint
         {.cdecl, dynlib: Lib, importc: "sqlite3_load_extension".}
+
+when defined(sqlite_has_codec):
+    proc sqlite3CreateEncKey*(password: cstring)
+        {.cdecl, dynlib: Lib, importc: "sqlite3CreateEncKey".}
+
+    proc sqlite3InitCodec*(db: Sqlite3)
+        {.cdecl, dynlib: Lib, importc: "sqlite3InitCodec".}
